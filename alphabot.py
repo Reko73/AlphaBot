@@ -251,5 +251,5 @@ async def deverrouiller(interaction: discord.Interaction):
 
 
 
-
+keep_alive()
 bot.run(TOKEN)
