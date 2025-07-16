@@ -196,41 +196,25 @@ async def ban(interaction: discord.Interaction, membre: discord.Member, raison: 
         embed.add_field(name="Raison", value=raison, inline=False)
         await log_channel.send(embed=embed)
 
-@bot.tree.command(name="verrouiller", description="Verrouille le salon actuel (lecture seule).")
-async def verrouiller(interaction: discord.Interaction):
-    if not user_is_admin(interaction):
-        await interaction.response.send_message("Vous n'avez pas les permissions nécessaires pour utiliser cette commande.", ephemeral=True)
+@tree.command(name="unban", description="Débannir un utilisateur via son ID Discord")
+@app_commands.describe(user_id="ID Discord de l'utilisateur à débannir")
+async def unban(interaction: discord.Interaction, user_id: str):
+    # Permission : il faut que l'utilisateur ait le droit de bannir
+    if not interaction.user.guild_permissions.ban_members:
+        await interaction.response.send_message("❌ Tu n'as pas la permission de débannir.", ephemeral=True)
         return
 
-    overwrite = interaction.channel.overwrites_for(interaction.guild.default_role)
-    overwrite.send_messages = False
-    await interaction.channel.set_permissions(interaction.guild.default_role, overwrite=overwrite)
-    await interaction.response.send_message("🔒 Salon verrouillé.", ephemeral=True)
+    try:
+        user = await bot.fetch_user(int(user_id))
+        await interaction.guild.unban(user)
+        await interaction.response.send_message(f"✅ {user} a été débanni avec succès.")
+    except discord.NotFound:
+        await interaction.response.send_message("❌ Utilisateur non trouvé dans la liste des bannis.", ephemeral=True)
+    except discord.Forbidden:
+        await interaction.response.send_message("❌ Je n'ai pas la permission de débannir.", ephemeral=True)
+    except Exception as e:
+        await interaction.response.send_message(f"❌ Une erreur est survenue : {e}", ephemeral=True)
 
-    log_channel = get_log_channel(interaction)
-    if log_channel:
-        embed = Embed(title="🔐 Salon verrouillé",
-                      description=f"{interaction.user.mention} a verrouillé {interaction.channel.mention}.",
-                      color=discord.Color.greyple())
-        await log_channel.send(embed=embed)
-
-@bot.tree.command(name="déverrouiller", description="Déverrouille le salon actuel.")
-async def deverrouiller(interaction: discord.Interaction):
-    if not user_is_admin(interaction):
-        await interaction.response.send_message("Vous n'avez pas les permissions nécessaires pour utiliser cette commande.", ephemeral=True)
-        return
-
-    overwrite = interaction.channel.overwrites_for(interaction.guild.default_role)
-    overwrite.send_messages = True
-    await interaction.channel.set_permissions(interaction.guild.default_role, overwrite=overwrite)
-    await interaction.response.send_message("🔓 Salon déverrouillé.", ephemeral=True)
-
-    log_channel = get_log_channel(interaction)
-    if log_channel:
-        embed = Embed(title="🔓 Salon déverrouillé",
-                      description=f"{interaction.user.mention} a déverrouillé {interaction.channel.mention}.",
-                      color=discord.Color.green())
-        await log_channel.send(embed=embed)
 
 
 
