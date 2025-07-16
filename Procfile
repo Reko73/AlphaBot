@@ -1,1 +1,1 @@
-worker: python alphabot.py
+web: python keep_alive.py
