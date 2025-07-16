@@ -2,7 +2,9 @@ import discord
 from discord.ext import commands
 import os
 
-# Activer tous les intents
+load_dotenv()
+TOKEN = os.getenv("DISCORD_TOKEN")
+
 intents = discord.Intents.all()
 
 bot = commands.Bot(command_prefix="/", intents=intents)
@@ -15,6 +17,8 @@ async def on_ready():
 async def ping(ctx):
     await ctx.send("🏓 Pong !")
 
-# Tu pourras ajouter ici d'autres commandes comme /groupe_creer
+
+
+
 
 bot.run(TOKEN)
