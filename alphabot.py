@@ -34,7 +34,13 @@ bot = commands.Bot(command_prefix="/", intents=intents)
 
 @bot.event
 async def on_ready():
-    print(f"✅ Bot connecté en tant que {bot.user}")
+    await set_bot_status()
+    print(f"Connecté en tant que {bot.user} (ID: {bot.user.id})")
+    try:
+        synced = await bot.tree.sync()
+        print(f"Commandes slash synchronisées : {len(synced)}")
+    except Exception as e:
+        print(f"Erreur lors de la synchronisation des commandes : {e}")
 
 async def set_bot_status():
     await bot.change_presence(
@@ -106,31 +112,6 @@ async def on_message(message):
     allowed_role_ids = ADMIN_ROLES.get(guild_id, [])
     log_channel_id = LOG_CHANNELS.get(guild_id)
     log_channel = message.guild.get_channel(log_channel_id) if log_channel_id else None
-
-    if message.channel.id in channels_to_check and "discord.gg" in message.content.lower():
-    # ✅ Vérifie si l'utilisateur a au moins un rôle autorisé (staff)
-        if not any(role.id in allowed_role_ids for role in getattr(message.author, "roles", [])):
-            try:
-                await message.delete()
-            except discord.NotFound:
-                pass
-
-            await message.channel.send(
-                "⛔ Lien Discord non autorisé. Ton message a été supprimé.",
-                delete_after=10
-            )
-
-            if log_channel:
-                embed = discord.Embed(
-                    title="🔗 Lien Discord supprimé",
-                    description="Un lien Discord a été posté par un survivant.",
-                    color=discord.Color.orange()
-                )
-                embed.add_field(name="Auteur", value=message.author.mention, inline=True)
-                embed.add_field(name="Salon", value=message.channel.mention, inline=True)
-                embed.add_field(name="Contenu", value=f"```{message.content}```", inline=False)
-                embed.timestamp = message.created_at
-                await log_channel.send(embed=embed)
     
 
     await bot.process_commands(message)
