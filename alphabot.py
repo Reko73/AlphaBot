@@ -196,25 +196,34 @@ async def ban(interaction: discord.Interaction, membre: discord.Member, raison: 
         embed.add_field(name="Raison", value=raison, inline=False)
         await log_channel.send(embed=embed)
 
-@tree.command(name="unban", description="Débannir un utilisateur via son ID Discord")
-@app_commands.describe(user_id="ID Discord de l'utilisateur à débannir")
-async def unban(interaction: discord.Interaction, user_id: str):
-    # Permission : il faut que l'utilisateur ait le droit de bannir
-    if not interaction.user.guild_permissions.ban_members:
-        await interaction.response.send_message("❌ Tu n'as pas la permission de débannir.", ephemeral=True)
+@bot.tree.command(name="unban", description="Débannit un utilisateur via son ID Discord.")
+@app_commands.describe(user_id="ID Discord de l'utilisateur à débannir", raison="Raison du débannissement")
+async def unban(interaction: discord.Interaction, user_id: str, raison: str = "Aucune raison fournie"):
+    if not user_is_admin(interaction):
+        await interaction.response.send_message("Vous n'avez pas les permissions nécessaires pour utiliser cette commande.", ephemeral=True)
         return
 
     try:
         user = await bot.fetch_user(int(user_id))
-        await interaction.guild.unban(user)
-        await interaction.response.send_message(f"✅ {user} a été débanni avec succès.")
+        await interaction.guild.unban(user, reason=raison)
+        await interaction.response.send_message(f"{user.mention} a été débanni.", ephemeral=True)
+
+        log_channel = get_log_channel(interaction)
+        if log_channel:
+            embed = discord.Embed(
+                title="🔓 Débannissement",
+                description=f"{user.mention} a été débanni par {interaction.user.mention}.",
+                color=discord.Color.green()
+            )
+            embed.add_field(name="Raison", value=raison, inline=False)
+            await log_channel.send(embed=embed)
+
     except discord.NotFound:
-        await interaction.response.send_message("❌ Utilisateur non trouvé dans la liste des bannis.", ephemeral=True)
+        await interaction.response.send_message("❌ Cet utilisateur n'est pas dans la liste des bannis.", ephemeral=True)
     except discord.Forbidden:
-        await interaction.response.send_message("❌ Je n'ai pas la permission de débannir.", ephemeral=True)
+        await interaction.response.send_message("❌ Je n'ai pas la permission de débannir cet utilisateur.", ephemeral=True)
     except Exception as e:
         await interaction.response.send_message(f"❌ Une erreur est survenue : {e}", ephemeral=True)
-
 
 
 
