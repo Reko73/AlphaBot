@@ -226,6 +226,40 @@ async def unban(interaction: discord.Interaction, user_id: str, raison: str = "A
         await interaction.response.send_message(f"❌ Une erreur est survenue : {e}", ephemeral=True)
 
 
+@bot.tree.command(name="annonce", description="Envoie une annonce dans le salon actuel (réservé aux admins).")
+@app_commands.describe(titre="Titre de l'annonce", message="Contenu de l'annonce")
+async def annonce(interaction: discord.Interaction, titre: str, message: str):
+    if not user_is_admin(interaction):
+        await interaction.response.send_message("❌ Vous n'avez pas la permission d'utiliser cette commande.", ephemeral=True)
+        return
+
+    embed = discord.Embed(
+        title=f"📢 {titre}",
+        description=message,
+        color=discord.Color.blurple()
+    )
+    embed.set_footer(text=f"Annonce par {interaction.user.display_name}", icon_url=interaction.user.display_avatar.url)
+    embed.timestamp = discord.utils.utcnow()
+
+    await interaction.channel.send(embed=embed)
+    await interaction.response.send_message("✅ Annonce envoyée avec succès.", ephemeral=True)
+
+    # 🔧 LOG
+    log_channel = get_log_channel(interaction)
+    if log_channel:
+        log_embed = discord.Embed(
+            title="📝 Annonce publiée",
+            description=f"{interaction.user.mention} a publié une annonce dans {interaction.channel.mention}.",
+            color=discord.Color.blue()
+        )
+        log_embed.add_field(name="Titre", value=titre, inline=False)
+        log_embed.add_field(name="Message", value=message, inline=False)
+        log_embed.set_footer(text=f"ID: {interaction.user.id}")
+        log_embed.timestamp = discord.utils.utcnow()
+
+        await log_channel.send(embed=log_embed)
+
+
 
 keep_alive()
 bot.run(TOKEN)
