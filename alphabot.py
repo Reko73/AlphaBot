@@ -243,12 +243,13 @@ async def annonce(interaction: discord.Interaction, titre: str, message: str):
     embed.set_footer(text=f"Annonce par {interaction.user.display_name}", icon_url=interaction.user.display_avatar.url)
     embed.timestamp = discord.utils.utcnow()
 
-    embed.set_thumbnail(url=avatar_url)  # photo de profil bot
+    embed.set_thumbnail(url=avatar_url) 
 
     await interaction.channel.send(embed=embed)
+
     await interaction.response.send_message("✅ Annonce envoyée avec succès.", ephemeral=True)
 
-    # 🔧 LOG
+    # Logs
     log_channel = get_log_channel(interaction)
     if log_channel:
         log_embed = discord.Embed(
