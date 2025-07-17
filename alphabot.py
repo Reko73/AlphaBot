@@ -45,7 +45,7 @@ async def on_ready():
 async def set_bot_status():
     await bot.change_presence(
         status=discord.Status.dnd,
-        activity=discord.Activity(type=discord.ActivityType.watching, name="Zero Alpha")
+        activity=discord.Activity(type=discord.ActivityType.watching, name="l'Airfield de ZERO ALPHA")
     )
 
 def user_is_admin(interaction):
