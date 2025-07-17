@@ -227,11 +227,15 @@ async def unban(interaction: discord.Interaction, user_id: str, raison: str = "A
 
 
 @bot.tree.command(name="annonce", description="Envoie une annonce dans le salon actuel (réservé aux admins).")
+@bot.tree.command(name="annonce", description="Envoie une annonce dans le salon actuel (réservé aux admins).")
 @app_commands.describe(titre="Titre de l'annonce", message="Contenu de l'annonce")
 async def annonce(interaction: discord.Interaction, titre: str, message: str):
     if not user_is_admin(interaction):
         await interaction.response.send_message("❌ Vous n'avez pas la permission d'utiliser cette commande.", ephemeral=True)
         return
+
+    avatar_url = "https://cdn.discordapp.com/attachments/1166900878318510141/1395198250620813432/ChatGPT_Image_17_juil._2025_00_14_43.png?ex=68799320&is=687841a0&hm=74fab5365a5debff7eb0c7663e364a74f5c69e116ffa46a8a1701bcec301c8bc&"
+    banner_url = "https://cdn.discordapp.com/attachments/1166900878318510141/1395198252021973033/ChatGPT_Image_15_juil._2025_22_40_40.png?ex=68799320&is=687841a0&hm=7d6829ad82835b80d6873c278ab84b1b9c60335270bd0bcbaab69f87329cf90b&"
 
     embed = discord.Embed(
         title=f"📢 {titre}",
@@ -240,6 +244,9 @@ async def annonce(interaction: discord.Interaction, titre: str, message: str):
     )
     embed.set_footer(text=f"Annonce par {interaction.user.display_name}", icon_url=interaction.user.display_avatar.url)
     embed.timestamp = discord.utils.utcnow()
+
+    embed.set_thumbnail(url=avatar_url)  # photo de profil bot
+    embed.set_image(url=banner_url)      # bannière bot
 
     await interaction.channel.send(embed=embed)
     await interaction.response.send_message("✅ Annonce envoyée avec succès.", ephemeral=True)
