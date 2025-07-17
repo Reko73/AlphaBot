@@ -227,7 +227,6 @@ async def unban(interaction: discord.Interaction, user_id: str, raison: str = "A
 
 
 @bot.tree.command(name="annonce", description="Envoie une annonce dans le salon actuel (réservé aux admins).")
-@bot.tree.command(name="annonce", description="Envoie une annonce dans le salon actuel (réservé aux admins).")
 @app_commands.describe(titre="Titre de l'annonce", message="Contenu de l'annonce")
 async def annonce(interaction: discord.Interaction, titre: str, message: str):
     if not user_is_admin(interaction):
