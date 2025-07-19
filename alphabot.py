@@ -7,7 +7,7 @@ from discord.ext import commands, tasks
 from discord import app_commands, Embed, Colour
 from dotenv import load_dotenv
 import asyncio
-from datetime import datetime, time as dtime
+from datetime import datetime, timedelta
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -38,7 +38,7 @@ bot = commands.Bot(command_prefix="/", intents=intents)
 
 
 @tasks.loop(minutes=1)
-async def vote_20h45():
+async def vote_20h47():
     now = datetime.now()
     if now.hour == 20 and now.minute == 30:
         channel = bot.get_channel(1393782511380725883)
@@ -58,7 +58,6 @@ async def vote_20h45():
 async def on_ready():
     await set_bot_status()
     print(f"Connecté en tant que {bot.user} (ID: {bot.user.id})")
-    
     try:
         synced = await bot.tree.sync()
         print(f"Commandes slash synchronisées : {len(synced)}")
@@ -66,7 +65,7 @@ async def on_ready():
         print(f"Erreur lors de la synchronisation des commandes : {e}")
 
     vote_14h.start()
-    vote_20h40.start()
+    vote_20h45.start()
 
 
 async def set_bot_status():
