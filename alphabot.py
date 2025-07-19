@@ -28,43 +28,9 @@ DISCORD_LINK_CHANNELS = {
 }
 
 
-VOTE_CHANNEL_ID = 1387099995194523724
-ROLE_ID = 1387103255183753236
-
-
 intents = discord.Intents.all()
 
 bot = commands.Bot(command_prefix="/", intents=intents)
-
-
-last_vote_times = {"14h": None, "23h38": None}
-
-@tasks.loop(minutes=0)
-async def vote_reminder():
-    now = datetime.now()
-    current_time = now.time()
-
-    # Créneaux horaires souhaités
-    schedule = {
-        "14h": time(14, 0),
-        "23h38": time(23, 38)
-    }
-
-    for label, scheduled_time in schedule.items():
-        # Vérifie si c'est le bon moment et si ça n'a pas encore été envoyé aujourd'hui
-        if current_time.hour == scheduled_time.hour and current_time.minute == scheduled_time.minute:
-            if last_vote_times[label] != now.date():
-                channel = bot.get_channel(VOTE_CHANNEL_ID)
-                if channel:
-                    await channel.send(
-                        "🎉 C’est le moment de faire la différence ! 🎉\n"
-                        "Fallzone a besoin de VOTRE soutien !\n"
-                        "Allez voter pour Fallzone et montrez que notre communauté est la meilleure 💪\n"
-                        "Chaque vote compte, alors prenez 2 minutes et faites entendre votre voix !\n"
-                        "👇 Cliquez ici pour voter : https://top-serveurs.net/gta/fallzone\n"
-                        f"Merci à tous ! 🚀\n<@&{ROLE_ID}>"
-                    )
-                    last_vote_times[label] = now.date()  # Marque comme envoyé aujourd'hui
 
 
 @bot.event
@@ -76,8 +42,6 @@ async def on_ready():
         print(f"Commandes slash synchronisées : {len(synced)}")
     except Exception as e:
         print(f"Erreur lors de la synchronisation des commandes : {e}")
-
-    vote_reminder.start()
 
 
 async def set_bot_status():
