@@ -29,7 +29,7 @@ DISCORD_LINK_CHANNELS = {
 }
 
 VOTE_CHANNEL_ID = 1387099995194523724  # Ton salon cible
-ROLE_ID = 1387103255183753236          # ID du rôle à mentionner
+MENTION_ROLE_ID = 1387103255183753236         # ID du rôle à mentionner
 
 
 intents = discord.Intents.all()
@@ -37,10 +37,15 @@ intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="/", intents=intents)
 
 
+already_sent = set()
+
 @tasks.loop(minutes=1)
 async def vote_reminder_task():
-    now = datetime.now().time()
-    if now.hour == 14 and now.minute == 0 or now.hour == 20 and now.minute == 30:
+    now = datetime.now()
+    current_time = (now.hour, now.minute)
+    target_times = [(14, 0), (20, 37)]
+
+    if current_time in target_times and current_time not in already_sent:
         channel = bot.get_channel(VOTE_CHANNEL_ID)
         if channel:
             await channel.send(
@@ -52,7 +57,9 @@ async def vote_reminder_task():
                 f"Merci à tous ! 🚀\n"
                 f"<@&{MENTION_ROLE_ID}>"
             )
-        await asyncio.sleep(60)
+            already_sent.add(current_time)
+    elif current_time not in target_times:
+        already_sent.clear()
 
 @bot.event
 async def on_ready():
