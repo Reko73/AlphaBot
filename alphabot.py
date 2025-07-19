@@ -45,7 +45,7 @@ async def on_ready():
         print(f"Erreur lors de la synchronisation des commandes : {e}")
 
     vote_14h.start()
-    vote_20h15.start()
+    vote_20h20.start()
 
 async def set_bot_status():
     await bot.change_presence(
@@ -292,7 +292,7 @@ async def vote_14h():
         )
 
 @tasks.loop(hours=24)
-async def vote_20h15():
+async def vote_20h20():
     await bot.wait_until_ready()
     now = datetime.now()
     target = now.replace(hour=20, minute=0, second=0, microsecond=0)
