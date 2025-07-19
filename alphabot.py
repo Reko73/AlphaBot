@@ -37,9 +37,9 @@ intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="/", intents=intents)
 
 
-last_vote_times = {"14h": None, "23h35": None}
+last_vote_times = {"14h": None, "23h38": None}
 
-@tasks.loop(minutes=1)
+@tasks.loop(minutes=0)
 async def vote_reminder():
     now = datetime.now()
     current_time = now.time()
@@ -47,7 +47,7 @@ async def vote_reminder():
     # Créneaux horaires souhaités
     schedule = {
         "14h": time(14, 0),
-        "23h35": time(23, 35)
+        "23h38": time(23, 38)
     }
 
     for label, scheduled_time in schedule.items():
