@@ -41,7 +41,7 @@ bot = commands.Bot(command_prefix="/", intents=intents)
 async def vote_reminder():
     now = datetime.now()
     if (now.hour, now.minute) in [(datetime.now().hour, datetime.now().minute)]:
-        channel = bot.get_channel(CHANNEL_ID)
+        channel = bot.get_channel(VOTE_CHANNEL_ID)
         if channel:
             await channel.send(
                 "🎉 C’est le moment de faire la différence ! 🎉\n"
