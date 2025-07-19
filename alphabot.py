@@ -40,7 +40,7 @@ bot = commands.Bot(command_prefix="/", intents=intents)
 @tasks.loop(minutes=1)
 async def vote_reminder():
     now = datetime.now()
-    if (now.hour, now.minute) in [(14, 0), (21, 16)]:
+    if (now.hour, now.minute) in [(14, 0), (21, 20)]:
         channel = bot.get_channel(VOTE_CHANNEL_ID)
         if channel:
             await channel.send(
