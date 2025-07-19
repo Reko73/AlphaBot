@@ -7,7 +7,7 @@ from discord.ext import commands, tasks
 from discord import app_commands, Embed, Colour
 from dotenv import load_dotenv
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -28,6 +28,9 @@ DISCORD_LINK_CHANNELS = {
     1387099994351468654: [1318165877350338612, 1313203999004164230],
 }
 
+VOTE_CHANNEL_ID = 1387099995194523724
+ROLE_ID = 1387103255183753236
+
 
 intents = discord.Intents.all()
 
@@ -35,10 +38,10 @@ bot = commands.Bot(command_prefix="/", intents=intents)
 
 
 @tasks.loop(minutes=1)
-async def vote_20h50():
+async def vote_reminder():
     now = datetime.now()
-    if now.hour == 20 and now.minute == 50:
-        channel = bot.get_channel(1387099995194523724)
+    if (now.hour, now.minute) in [(14, 0), (21, 0)]:  # à 14h00 et 20h50
+        channel = bot.get_channel(VOTE_CHANNEL_ID)
         if channel:
             await channel.send(
                 "🎉 C’est le moment de faire la différence ! 🎉\n"
@@ -47,13 +50,11 @@ async def vote_20h50():
                 "Chaque vote compte, alors prenez 2 minutes et faites entendre votre voix !\n"
                 "👇 Cliquez ici pour voter : https://top-serveurs.net/gta/fallzone\n"
                 "Merci à tous ! 🚀\n"
-                "<@&1387103255183753236>"
+                f"<@&{ROLE_ID}>"
             )
-            await asyncio.sleep(61)
 
 @bot.event
 async def on_ready():
-    await set_bot_status()
     print(f"Connecté en tant que {bot.user} (ID: {bot.user.id})")
     try:
         synced = await bot.tree.sync()
@@ -61,8 +62,7 @@ async def on_ready():
     except Exception as e:
         print(f"Erreur lors de la synchronisation des commandes : {e}")
 
-    vote_14h.start()
-    vote_20h50.start()
+    vote_reminder.start() 
 
 
 async def set_bot_status():
