@@ -1,5 +1,4 @@
 import discord
-from discord.ext import commands
 from discord import app_commands
 import os
 from keep_alive import keep_alive
@@ -29,20 +28,56 @@ DISCORD_LINK_CHANNELS = {
 }
 
 
+VOTE_CHANNEL_ID = 1387099995194523724
+ROLE_ID = 1387103255183753236
+
+
 intents = discord.Intents.all()
 
 bot = commands.Bot(command_prefix="/", intents=intents)
 
 
+last_vote_times = {"14h": None, "20h": None}
+
+@tasks.loop(minutes=1)
+async def vote_reminder():
+    now = datetime.now()
+    current_time = now.time()
+
+    # Créneaux horaires souhaités
+    schedule = {
+        "14h": time(14, 0),
+        "20h": time(20, 0)
+    }
+
+    for label, scheduled_time in schedule.items():
+        # Vérifie si c'est le bon moment et si ça n'a pas encore été envoyé aujourd'hui
+        if current_time.hour == scheduled_time.hour and current_time.minute == scheduled_time.minute:
+            if last_vote_times[label] != now.date():
+                channel = bot.get_channel(VOTE_CHANNEL_ID)
+                if channel:
+                    await channel.send(
+                        "🎉 C’est le moment de faire la différence ! 🎉\n"
+                        "Fallzone a besoin de VOTRE soutien !\n"
+                        "Allez voter pour Fallzone et montrez que notre communauté est la meilleure 💪\n"
+                        "Chaque vote compte, alors prenez 2 minutes et faites entendre votre voix !\n"
+                        "👇 Cliquez ici pour voter : https://top-serveurs.net/gta/fallzone\n"
+                        f"Merci à tous ! 🚀\n<@&{ROLE_ID}>"
+                    )
+                    last_vote_times[label] = now.date()  # Marque comme envoyé aujourd'hui
+
 
 @bot.event
 async def on_ready():
+    await set_bot_status()
     print(f"Connecté en tant que {bot.user} (ID: {bot.user.id})")
     try:
         synced = await bot.tree.sync()
         print(f"Commandes slash synchronisées : {len(synced)}")
     except Exception as e:
         print(f"Erreur lors de la synchronisation des commandes : {e}")
+
+    vote_reminder.start()
 
 
 async def set_bot_status():
@@ -267,48 +302,6 @@ async def annonce(interaction: discord.Interaction, titre: str, message: str):
 
         await log_channel.send(embed=log_embed)
 
-
-@tasks.loop(hours=24)
-async def vote_14h():
-    await bot.wait_until_ready()
-    now = datetime.now()
-    target = now.replace(hour=14, minute=0, second=0, microsecond=0)
-    if now >= target:
-        target += timedelta(days=1)
-    await asyncio.sleep((target - now).total_seconds())
-
-    channel = bot.get_channel(1393782511380725883)
-    if channel:
-        await channel.send(
-            "🎉 C’est le moment de faire la différence ! 🎉\n"
-            "Fallzone a besoin de VOTRE soutien !\n"
-            "Allez voter pour Fallzone et montrez que notre communauté est la meilleure 💪\n"
-            "Chaque vote compte, alors prenez 2 minutes et faites entendre votre voix !\n"
-            "👇 Cliquez ici pour voter : https://top-serveurs.net/gta/fallzone\n"
-            "Merci à tous ! 🚀\n"
-            "<@&1378463720090501150>"
-        )
-
-@tasks.loop(hours=24)
-async def vote_20h25():
-    await bot.wait_until_ready()
-    now = datetime.now()
-    target = now.replace(hour=20, minute=0, second=0, microsecond=0)
-    if now >= target:
-        target += timedelta(days=1)
-    await asyncio.sleep((target - now).total_seconds())
-
-    channel = bot.get_channel(1393782511380725883)
-    if channel:
-        await channel.send(
-            "🎉 C’est le moment de faire la différence ! 🎉\n"
-            "Fallzone a besoin de VOTRE soutien !\n"
-            "Allez voter pour Fallzone et montrez que notre communauté est la meilleure 💪\n"
-            "Chaque vote compte, alors prenez 2 minutes et faites entendre votre voix !\n"
-            "👇 Cliquez ici pour voter : https://top-serveurs.net/gta/fallzone\n"
-            "Merci à tous ! 🚀\n"
-            "<@&1378463720090501150>"
-        )
 
 
 
