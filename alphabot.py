@@ -28,6 +28,9 @@ DISCORD_LINK_CHANNELS = {
     1387099994351468654: [1318165877350338612, 1313203999004164230],
 }
 
+VOTE_CHANNEL_ID = 1387099995194523724  # Ton salon cible
+ROLE_ID = 1387103255183753236          # ID du rôle à mentionner
+
 
 intents = discord.Intents.all()
 
@@ -45,7 +48,7 @@ async def on_ready():
         print(f"Erreur lors de la synchronisation des commandes : {e}")
 
     vote_14h.start()
-    vote_20h20.start()
+    vote_20h25.start()
 
 async def set_bot_status():
     await bot.change_presence(
@@ -292,7 +295,7 @@ async def vote_14h():
         )
 
 @tasks.loop(hours=24)
-async def vote_20h20():
+async def vote_20h25():
     await bot.wait_until_ready()
     now = datetime.now()
     target = now.replace(hour=20, minute=0, second=0, microsecond=0)
