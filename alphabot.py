@@ -37,7 +37,7 @@ bot = commands.Bot(command_prefix="/", intents=intents)
 @tasks.loop(minutes=1)
 async def vote_20h50():
     now = datetime.now()
-    if now.hour == 20 and now.minute == 30:
+    if now.hour == 20 and now.minute == 50:
         channel = bot.get_channel(1387099995194523724)
         if channel:
             await channel.send(
