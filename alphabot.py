@@ -39,8 +39,12 @@ bot = commands.Bot(command_prefix="/", intents=intents)
 
 @tasks.loop(minutes=1)
 async def vote_reminder():
+    global last_sent
     now = datetime.now()
-    if (now.hour, now.minute) in [(14, 0), (21, 20)]:
+    current_time = (now.hour, now.minute)
+    scheduled_times = [(14, 0), (21, 25)]  # Heures en FR
+
+    if current_time in scheduled_times and last_sent != current_time:
         channel = bot.get_channel(VOTE_CHANNEL_ID)
         if channel:
             await channel.send(
@@ -52,6 +56,7 @@ async def vote_reminder():
                 "Merci à tous ! 🚀\n"
                 f"<@&{ROLE_ID}>"
             )
+            last_sent = current_time
 
 @bot.event
 async def on_ready():
