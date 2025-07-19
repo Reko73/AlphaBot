@@ -37,29 +37,22 @@ intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="/", intents=intents)
 
 
-already_sent = set()
-
 @tasks.loop(minutes=1)
-async def vote_reminder_task():
+async def vote_20h45():
     now = datetime.now()
-    current_time = (now.hour, now.minute)
-    target_times = [(14, 0), (20, 37)]
-
-    if current_time in target_times and current_time not in already_sent:
-        channel = bot.get_channel(VOTE_CHANNEL_ID)
+    if now.hour == 20 and now.minute == 30:
+        channel = bot.get_channel(1393782511380725883)
         if channel:
             await channel.send(
-                f"🎉 C’est le moment de faire la différence ! 🎉\n"
-                f"Fallzone a besoin de VOTRE soutien !\n"
-                f"Allez voter pour Fallzone et montrez que notre communauté est la meilleure 💪\n"
-                f"Chaque vote compte, alors prenez 2 minutes et faites entendre votre voix !\n"
-                f"👇 Cliquez ici pour voter : https://top-serveurs.net/gta/fallzone\n"
-                f"Merci à tous ! 🚀\n"
-                f"<@&{MENTION_ROLE_ID}>"
+                "🎉 C’est le moment de faire la différence ! 🎉\n"
+                "Fallzone a besoin de VOTRE soutien !\n"
+                "Allez voter pour Fallzone et montrez que notre communauté est la meilleure 💪\n"
+                "Chaque vote compte, alors prenez 2 minutes et faites entendre votre voix !\n"
+                "👇 Cliquez ici pour voter : https://top-serveurs.net/gta/fallzone\n"
+                "Merci à tous ! 🚀\n"
+                "<@&1378463720090501150>"
             )
-            already_sent.add(current_time)
-    elif current_time not in target_times:
-        already_sent.clear()
+            await asyncio.sleep(61)
 
 @bot.event
 async def on_ready():
@@ -72,8 +65,9 @@ async def on_ready():
     except Exception as e:
         print(f"Erreur lors de la synchronisation des commandes : {e}")
 
-    if not vote_reminder_task.is_running():
-        vote_reminder_task.start()
+    vote_14h.start()
+    vote_20h40.start()
+
 
 async def set_bot_status():
     await bot.change_presence(
