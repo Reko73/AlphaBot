@@ -7,7 +7,7 @@ from discord.ext import commands, tasks
 from discord import app_commands, Embed, Colour
 from dotenv import load_dotenv
 import asyncio
-from datetime import datetime
+from datetime import datetime, time
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -37,7 +37,7 @@ intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="/", intents=intents)
 
 
-last_vote_times = {"14h": None, "21h32": None}
+last_vote_times = {"14h": None, "21h33": None}
 
 @tasks.loop(minutes=1)
 async def vote_reminder():
@@ -47,7 +47,7 @@ async def vote_reminder():
     # Créneaux horaires souhaités
     schedule = {
         "14h": time(14, 0),
-        "21h32": time(21, 32)
+        "21h33": time(21, 33)
     }
 
     for label, scheduled_time in schedule.items():
