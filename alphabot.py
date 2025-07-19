@@ -37,26 +37,34 @@ intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="/", intents=intents)
 
 
+last_vote_times = {"14h": None, "21h32": None}
+
 @tasks.loop(minutes=1)
 async def vote_reminder():
-    global last_sent
     now = datetime.now()
-    current_time = (now.hour, now.minute)
-    scheduled_times = [(14, 0), (21, 25)]  # Heures en FR
+    current_time = now.time()
 
-    if current_time in scheduled_times and last_sent != current_time:
-        channel = bot.get_channel(VOTE_CHANNEL_ID)
-        if channel:
-            await channel.send(
-                "🎉 C’est le moment de faire la différence ! 🎉\n"
-                "Fallzone a besoin de VOTRE soutien !\n"
-                "Allez voter pour Fallzone et montrez que notre communauté est la meilleure 💪\n"
-                "Chaque vote compte, alors prenez 2 minutes et faites entendre votre voix !\n"
-                "👇 Cliquez ici pour voter : https://top-serveurs.net/gta/fallzone\n"
-                "Merci à tous ! 🚀\n"
-                f"<@&{ROLE_ID}>"
-            )
-            last_sent = current_time
+    # Créneaux horaires souhaités
+    schedule = {
+        "14h": time(14, 0),
+        "21h32": time(21, 32)
+    }
+
+    for label, scheduled_time in schedule.items():
+        # Vérifie si c'est le bon moment et si ça n'a pas encore été envoyé aujourd'hui
+        if current_time.hour == scheduled_time.hour and current_time.minute == scheduled_time.minute:
+            if last_vote_times[label] != now.date():
+                channel = bot.get_channel(VOTE_CHANNEL_ID)
+                if channel:
+                    await channel.send(
+                        "🎉 C’est le moment de faire la différence ! 🎉\n"
+                        "Fallzone a besoin de VOTRE soutien !\n"
+                        "Allez voter pour Fallzone et montrez que notre communauté est la meilleure 💪\n"
+                        "Chaque vote compte, alors prenez 2 minutes et faites entendre votre voix !\n"
+                        "👇 Cliquez ici pour voter : https://top-serveurs.net/gta/fallzone\n"
+                        f"Merci à tous ! 🚀\n<@&{ROLE_ID}>"
+                    )
+                    last_vote_times[label] = now.date()
 
 @bot.event
 async def on_ready():
