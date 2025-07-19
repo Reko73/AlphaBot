@@ -65,7 +65,7 @@ async def on_ready():
         print(f"Erreur lors de la synchronisation des commandes : {e}")
 
     vote_14h.start()
-    vote_20h45.start()
+    vote_20h47.start()
 
 
 async def set_bot_status():
