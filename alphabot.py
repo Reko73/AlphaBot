@@ -41,7 +41,7 @@ bot = commands.Bot(command_prefix="/", intents=intents)
 async def vote_20h47():
     now = datetime.now()
     if now.hour == 20 and now.minute == 30:
-        channel = bot.get_channel(1393782511380725883)
+        channel = bot.get_channel(1387099995194523724)
         if channel:
             await channel.send(
                 "🎉 C’est le moment de faire la différence ! 🎉\n"
@@ -50,7 +50,7 @@ async def vote_20h47():
                 "Chaque vote compte, alors prenez 2 minutes et faites entendre votre voix !\n"
                 "👇 Cliquez ici pour voter : https://top-serveurs.net/gta/fallzone\n"
                 "Merci à tous ! 🚀\n"
-                "<@&1378463720090501150>"
+                "<@&1387103255183753236>"
             )
             await asyncio.sleep(61)
 
