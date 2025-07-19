@@ -6,7 +6,8 @@ from keep_alive import keep_alive
 from discord.ext import commands, tasks
 from discord import app_commands, Embed, Colour
 from dotenv import load_dotenv
-import datetime
+import asyncio
+from datetime import datetime, timedelta
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -36,11 +37,15 @@ bot = commands.Bot(command_prefix="/", intents=intents)
 async def on_ready():
     await set_bot_status()
     print(f"Connecté en tant que {bot.user} (ID: {bot.user.id})")
+    
     try:
         synced = await bot.tree.sync()
         print(f"Commandes slash synchronisées : {len(synced)}")
     except Exception as e:
         print(f"Erreur lors de la synchronisation des commandes : {e}")
+
+    vote_14h.start()
+    vote_20h15.start()
 
 async def set_bot_status():
     await bot.change_presence(
@@ -263,6 +268,49 @@ async def annonce(interaction: discord.Interaction, titre: str, message: str):
         log_embed.timestamp = discord.utils.utcnow()
 
         await log_channel.send(embed=log_embed)
+
+
+@tasks.loop(hours=24)
+async def vote_14h():
+    await bot.wait_until_ready()
+    now = datetime.now()
+    target = now.replace(hour=14, minute=0, second=0, microsecond=0)
+    if now >= target:
+        target += timedelta(days=1)
+    await asyncio.sleep((target - now).total_seconds())
+
+    channel = bot.get_channel(1393782511380725883)
+    if channel:
+        await channel.send(
+            "🎉 C’est le moment de faire la différence ! 🎉\n"
+            "Fallzone a besoin de VOTRE soutien !\n"
+            "Allez voter pour Fallzone et montrez que notre communauté est la meilleure 💪\n"
+            "Chaque vote compte, alors prenez 2 minutes et faites entendre votre voix !\n"
+            "👇 Cliquez ici pour voter : https://top-serveurs.net/gta/fallzone\n"
+            "Merci à tous ! 🚀\n"
+            "<@&1378463720090501150>"
+        )
+
+@tasks.loop(hours=24)
+async def vote_20h15():
+    await bot.wait_until_ready()
+    now = datetime.now()
+    target = now.replace(hour=20, minute=0, second=0, microsecond=0)
+    if now >= target:
+        target += timedelta(days=1)
+    await asyncio.sleep((target - now).total_seconds())
+
+    channel = bot.get_channel(1393782511380725883)
+    if channel:
+        await channel.send(
+            "🎉 C’est le moment de faire la différence ! 🎉\n"
+            "Fallzone a besoin de VOTRE soutien !\n"
+            "Allez voter pour Fallzone et montrez que notre communauté est la meilleure 💪\n"
+            "Chaque vote compte, alors prenez 2 minutes et faites entendre votre voix !\n"
+            "👇 Cliquez ici pour voter : https://top-serveurs.net/gta/fallzone\n"
+            "Merci à tous ! 🚀\n"
+            "<@&1378463720090501150>"
+        )
 
 
 
